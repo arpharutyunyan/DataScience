@@ -4,19 +4,22 @@ import random
 import numpy as np
 
 """
-Commands are: 'open' for creating file
-              'read' for reading and printing the result
+Commands are: '-o' or '--open' for creating file
+              '-r' or '--read' for reading and printing the result
+              '-h' or '--help' for getting help
 """
 
 
 def main():
     # check if there is command
     if len(sys.argv) < 2 or len(sys.argv) > 2:
-        sys.exit('Usage: You should choose one command from [open, read]')
+        sys.exit('Usage: You should choose one command from [-o, -r, -h]')
     command = sys.argv[1]
-    if command == 'open':
+    if command in ('-h', '--help'):
+        sys.exit("Choose '-o' command for opening file\n\t'-r' command for reading file")
+    elif command in ('-o', '--open'):
         open_file()
-    elif command == 'read':
+    elif command in ('-r', '--read'):
         read_file(file='csv_file.csv')
     else:
         sys.exit(f'Usage: Command {command} not found')
