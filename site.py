@@ -57,18 +57,18 @@ def neighbors_link (link):
 print(main())
 
 # creating list for mongodb
-# explored_resultat= main()
-# explored_list =[]
-# for i in explored_resultat:
-#     my_dict={'link': i}
-#     explored_list.append(my_dict)
+explored_resultat= main()
+explored_list =[]
+for i in explored_resultat:
+    my_dict={'link': i}
+    explored_list.append(my_dict)
 
 
-# #  MongoDb
-# client=MongoClient('localhost', 27017)
-# db=client['db_link']
-# col=db['link']
-# col.insert_many(explored_list)
+#  MongoDb
+client=MongoClient('localhost', 27017)
+db=client['db_link']
+col=db['link']
+col.insert_many(explored_list)
 
-# for y in col.find():
-#     print(y)
+for y in col.find():
+    print(y)
