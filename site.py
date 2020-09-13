@@ -40,10 +40,10 @@ def main():
             if link not in stack and link not in explored:
                 # adding all links to list
                 stack.append(link)
-        print(len(stack))
+        
         # to stop loop 
         if len(stack) == 0:
-            return len(explored)
+            return explored
     
 
 
