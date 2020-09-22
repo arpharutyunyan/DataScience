@@ -1,10 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from creating_mongo import  mongo_connection, find_link, getting_ids, get_path
+from creating_mongo import  insert_pages, find_link, getting_ids, get_path
+from config import SITE_NAME, SITE_PROTOCOL
 
-SITE_PROTOCOL = "http://"
-SITE_NAME = "foodtime.am"
+def get_response(url):
+    # get response
+    response = requests.get(url)
+    return response
 
 
 def get_content(url):
@@ -15,7 +18,7 @@ def get_content(url):
 
     """
 
-    response = requests.get(url)
+    response = get_response(url)
     # check if that page is success (200, 201, 202, .... , 208, 226)
     if 200 <= response.status_code <= 226:
         # get html content as text
@@ -25,30 +28,31 @@ def get_content(url):
     return None
    
 
-def get_page_links (soup, site_name=SITE_NAME):
+def get_page_links (soup):
 
     """
     Clear and take used tage 
     insert values into mongodb
 
     """
-
-    for link in soup.find_all('a'):
-        href = link.get('href')
-        o = urlparse(href)
-        # check if there is path
-        if o.path:
-            # find all inside domains
-            if o.netloc == site_name or not o.netloc:
-                # check if there is that path in mongodb
-                res = find_link(o.path)                       
-                if res==0:
-                    data = {'protocol': o.scheme, 'domain': o.netloc, 'path': o.path}
-                    # get id and save dict in mongodb
-                    index = mongo_connection(data)
-                    # save htm file
-                    save_html(soup, index, o.path)
-                 
+    if soup:
+        for link in soup.find_all('a'):
+            href = link.get('href')
+            o = urlparse(href)
+            # check if there is path
+            if o.path:
+                # find all inside domains
+                if o.netloc == SITE_NAME or not o.netloc:
+                    # check if there is that path in mongodb
+                    res = find_link(o.path)                       
+                    if res==0:
+                        data = {'protocol': o.scheme, 'domain': o.netloc, 'path': o.path}
+                        # get id and save dict in mongodb
+                        insert_pages(data)
+                        # index = mongo_connection(data)
+                        # save htm file
+                        # save_html(soup, index)
+                    
 
 def getting_sublinks ():
 
@@ -71,17 +75,3 @@ def getting_sublinks ():
             # clearing page content
             get_page_links(soup)
         i+=1
-
-        
-        
-def save_html (soup, id, link):
-    """
-    Getting id from mongodb
-    Save file as html with id's name
-    """
-
-    full_path = '/home/arpine/Desktop/ML/parser/html_files/'
-  
-    with open (f'{full_path + str(id)}.html', 'w') as f:
-        f.writelines(str(soup))
-
